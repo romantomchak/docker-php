@@ -30,7 +30,7 @@ container id you can also specify a unique name for this container:
 $containerCreateResult = $docker->containerCreate($containerConfig, ['name' => 'my-container-unique-name']);
 ```
 
-Be aware that the container is immutable if you need to change a configuration for a container, you will need to remove
+Be aware, that the container is immutable if you need to change a configuration for a container, you will need to remove
 the existing one and create it again with the new configuration.
 
 ## Starting the container
@@ -72,7 +72,7 @@ $docker->containerStop('my-container-unique-name');
 ## Reading logs in real time
 
 Sometimes you will need to read logs in real time for a container. You can use the `containerAttach` method for that. 
-Be aware that you will only receive them if you configure the container with 
+Be aware, that you will only receive them if you configure the container with 
 [json log driver](https://docs.docker.com/engine/reference/logging/overview/), which is the default configuration.
 
 ```php
@@ -103,7 +103,7 @@ $attachStream->wait();
 ```
 
 If you follow all the example, you will not see the log and this normal. In fact the container and the call to the attach
-method need extra configuration:
+method need an extra configuration:
 
 ```php
 $containerConfig = new ContainersCreatePostBody();
@@ -142,7 +142,7 @@ the container before starting it.
 
 ## Interacting with a container
 
-WIth the last example we can now read the log a container in real time. However you may need to send input to this 
+WIth the last example we can now read the log a container in real time. However, you may need to send input to this 
 container. This can be done by attaching a websocket with the `containerAttachWebsocket` method:`
 
 ```php

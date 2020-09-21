@@ -2,15 +2,15 @@
 
 The recommended way to install Docker PHP is to use [Composer](http://getcomposer.org/):
 
-Run `composer require docker-php/docker-php` to add the dependency
+Run `composer require romantomchak/docker-php` to add the dependency
 
-By default it will use the last API version. However you can specify the API version of docker by setting a specific
-version for the `docker-php/docker-php-api`.
+By default, it will use the last API version. However, you can specify the API version of docker by setting a specific
+version for the `romantomchak/docker-php-api`.
 
-To use the 1.29 version you can do the following:
+To use the 1.40 version you can do the following:
 
 ```
-composer require docker-php/docker-php-api:4.1.29.*
+composer require romantomchak/docker-php-api:6.1.40.*
 ```
 
 Do not use `^4.1.29.0`; otherwise, you will also depend on the latest version. The first digit of this version number matches the 

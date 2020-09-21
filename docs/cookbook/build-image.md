@@ -63,7 +63,7 @@ on the PHP side as it will directly pipe the output of a `tar` process into the 
 
 ### Context Builder
 
-Additionally you can use the `ContextBuilder` to have a dynamic generation of your `Dockerfile`:
+Additionally, you can use the `ContextBuilder` to have a dynamic generation of your `Dockerfile`:
 
 ```php
 <?php

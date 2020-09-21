@@ -1,6 +1,6 @@
 # Docker-PHP
 
-This is the documentation for [docker-php](https://github.com/docker-php/docker-php) library.
+This is the documentation for [docker-php](https://github.com/romantomchak/docker-php) library.
 
 This library aim to reach 100% API support of the Docker Engine.
 
@@ -11,7 +11,6 @@ First you need to learn the basics of this library :
 * [Installation](installation.md)
 * [Connecting to Docker](connection.md)
 * [Basic usage](basic.md)
-* [Asynchronous Client](async.md)
 
 ## Cookbook
 
