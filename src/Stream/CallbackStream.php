@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Docker\Stream;
 
 use Psr\Http\Message\StreamInterface;
+use function call_user_func_array;
+use function is_array;
 
 abstract class CallbackStream
 {
+
     protected $stream;
 
     private $onNewFrameCallables = [];
@@ -43,12 +46,12 @@ abstract class CallbackStream
             $frame = $this->readFrame();
 
             if (null !== $frame) {
-                if (!\is_array($frame)) {
+                if (!is_array($frame)) {
                     $frame = [$frame];
                 }
 
                 foreach ($this->onNewFrameCallables as $newFrameCallable) {
-                    \call_user_func_array($newFrameCallable, $frame);
+                    call_user_func_array($newFrameCallable, $frame);
                 }
             }
         }

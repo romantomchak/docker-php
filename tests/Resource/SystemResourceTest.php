@@ -6,9 +6,11 @@ namespace Docker\Tests\Resource;
 
 use Docker\API\Model\EventsGetResponse200;
 use Docker\Tests\TestCase;
+use function time;
 
 class SystemResourceTest extends TestCase
 {
+
     /**
      * Return a container manager.
      */
@@ -20,8 +22,8 @@ class SystemResourceTest extends TestCase
     public function testGetEvents(): void
     {
         $stream = $this->getManager()->systemEvents([
-            'since' => (string) (\time() - 1),
-            'until' => (string) (\time() + 4),
+            'since' => (string) (time() - 1),
+            'until' => (string) (time() + 4),
         ]);
 
         $lastEvent = null;

@@ -4,7 +4,23 @@ declare(strict_types=1);
 
 namespace Docker\Stream;
 
+use Exception;
 use Psr\Http\Message\StreamInterface;
+use function array_values;
+use function chr;
+use function feof;
+use function fread;
+use function fwrite;
+use function is_resource;
+use function md5;
+use function ord;
+use function pack;
+use function random_int;
+use function stream_select;
+use function strlen;
+use function substr;
+use function uniqid;
+use function unpack;
 
 /**
  * An interactive stream is used when communicating with an attached docker container.
@@ -15,7 +31,10 @@ use Psr\Http\Message\StreamInterface;
  */
 class AttachWebsocketStream
 {
-    /** @var resource The underlying socket */
+
+    /**
+     * @var resource The underlying socket
+     */
     private $socket;
 
     public function __construct(StreamInterface $stream)
@@ -27,10 +46,12 @@ class AttachWebsocketStream
      * Send input to the container.
      *
      * @param string $data Data to send
+     *
+     * @throws Exception
      */
-    public function write($data): void
+    public function write(string $data): void
     {
-        $rand = \random_int(0, 28);
+        $rand = random_int(0, 28);
         $frame = [
             'fin' => 1,
             'rsv1' => 0,
@@ -38,15 +59,15 @@ class AttachWebsocketStream
             'rsv3' => 0,
             'opcode' => 1, // We always send text
             'mask' => 1,
-            'len' => \strlen($data),
-            'mask_key' => \substr(\md5(\uniqid()), $rand, 4),
+            'len' => strlen($data),
+            'mask_key' => substr(md5(uniqid()), $rand, 4),
             'data' => $data,
         ];
 
         if (1 === $frame['mask']) {
             for ($i = 0; $i < $frame['len']; ++$i) {
                 $frame['data'][$i]
-                    = \chr(\ord($frame['data'][$i]) ^ \ord($frame['mask_key'][$i % 4]));
+                    = chr(ord($frame['data'][$i]) ^ ord($frame['mask_key'][$i % 4]));
             }
         }
 
@@ -61,16 +82,16 @@ class AttachWebsocketStream
         $firstByte = ($frame['fin'] << 7) | (($frame['rsv1'] << 7) >> 1) | (($frame['rsv2'] << 7) >> 2) | (($frame['rsv3'] << 7) >> 3) | (($frame['opcode'] << 4) >> 4);
         $secondByte = ($frame['mask'] << 7) | (($len << 1) >> 1);
 
-        $this->socketWrite(\chr($firstByte));
-        $this->socketWrite(\chr($secondByte));
+        $this->socketWrite(chr($firstByte));
+        $this->socketWrite(chr($secondByte));
 
         if (126 === $len) {
-            $this->socketWrite(\pack('n', $frame['len']));
+            $this->socketWrite(pack('n', $frame['len']));
         } elseif (127 === $len) {
             $higher = $frame['len'] >> 32;
             $lower = ($frame['len'] << 32) >> 32;
-            $this->socketWrite(\pack('N', $higher));
-            $this->socketWrite(\pack('N', $lower));
+            $this->socketWrite(pack('N', $higher));
+            $this->socketWrite(pack('N', $lower));
         }
 
         if (1 === $frame['mask']) {
@@ -91,7 +112,7 @@ class AttachWebsocketStream
      */
     public function read($waitTime = 0, $waitMicroTime = 200000, $getFrame = false)
     {
-        if (!\is_resource($this->socket) || \feof($this->socket)) {
+        if (!is_resource($this->socket) || feof($this->socket)) {
             return null;
         }
 
@@ -99,14 +120,14 @@ class AttachWebsocketStream
         $write = null;
         $expect = null;
 
-        if (0 === \stream_select($read, $write, $expect, $waitTime, $waitMicroTime)) {
+        if (0 === stream_select($read, $write, $expect, $waitTime, $waitMicroTime)) {
             return false;
         }
 
         $firstByte = $this->socketRead(1);
         $frame = [];
-        $firstByte = \ord($firstByte);
-        $secondByte = \ord($this->socketRead(1));
+        $firstByte = ord($firstByte);
+        $secondByte = ord($this->socketRead(1));
 
         // First byte decoding
         $frame['fin'] = ($firstByte & 128) >> 7;
@@ -121,9 +142,9 @@ class AttachWebsocketStream
 
         // Get length of the frame
         if (126 === $frame['len']) {
-            $frame['len'] = \unpack('n', $this->socketRead(2))[1];
+            $frame['len'] = unpack('n', $this->socketRead(2))[1];
         } elseif (127 === $frame['len']) {
-            list($higher, $lower) = \array_values(\unpack('N2', $this->socketRead(8)));
+            list($higher, $lower) = array_values(unpack('N2', $this->socketRead(8)));
             $frame['len'] = ($higher << 32) | $lower;
         }
 
@@ -137,7 +158,7 @@ class AttachWebsocketStream
         // Decode data if needed
         if (1 === $frame['mask']) {
             for ($i = 0; $i < $frame['len']; ++$i) {
-                $frame['data'][$i] = \chr(\ord($frame['data'][$i]) ^ \ord($frame['mask_key'][$i % 4]));
+                $frame['data'][$i] = chr(ord($frame['data'][$i]) ^ ord($frame['mask_key'][$i % 4]));
             }
         }
 
@@ -160,8 +181,8 @@ class AttachWebsocketStream
         $read = '';
 
         do {
-            $read .= \fread($this->socket, $length - \strlen($read));
-        } while (\strlen($read) < $length && !\feof($this->socket));
+            $read .= fread($this->socket, $length - strlen($read));
+        } while (strlen($read) < $length && !feof($this->socket));
 
         return $read;
     }
@@ -175,6 +196,6 @@ class AttachWebsocketStream
      */
     private function socketWrite($data)
     {
-        return \fwrite($this->socket, $data);
+        return fwrite($this->socket, $data);
     }
 }

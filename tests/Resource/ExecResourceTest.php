@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Docker\Tests\Resource;
 
+use ArrayObject;
 use Docker\API\Model\ContainersCreatePostBody;
 use Docker\API\Model\ContainersIdExecPostBody;
 use Docker\API\Model\ExecIdJsonGetResponse200;
@@ -13,6 +14,7 @@ use Docker\Tests\TestCase;
 
 class ExecResourceTest extends TestCase
 {
+
     /**
      * Return the container manager.
      */
@@ -82,7 +84,7 @@ class ExecResourceTest extends TestCase
         $containerConfig->setImage('busybox:latest');
         $containerConfig->setCmd(['sh']);
         $containerConfig->setOpenStdin(true);
-        $containerConfig->setLabels(new \ArrayObject(['docker-php-test' => 'true']));
+        $containerConfig->setLabels(new ArrayObject(['docker-php-test' => 'true']));
 
         $containerCreateResult = self::getDocker()->containerCreate($containerConfig);
         self::getDocker()->containerStart($containerCreateResult->getId());

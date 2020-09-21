@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Docker\Tests\Resource;
 
+use ArrayObject;
 use Docker\API\Model\ContainersCreatePostBody;
 use Docker\Docker;
 use Docker\Stream\DockerRawStream;
@@ -11,6 +12,7 @@ use Docker\Tests\TestCase;
 
 class ContainerResourceTest extends TestCase
 {
+
     /**
      * Return the container manager.
      */
@@ -35,7 +37,7 @@ class ContainerResourceTest extends TestCase
         $containerConfig->setImage('busybox:latest');
         $containerConfig->setCmd(['echo', '-n', 'output']);
         $containerConfig->setAttachStdout(true);
-        $containerConfig->setLabels(new \ArrayObject(['docker-php-test' => 'true']));
+        $containerConfig->setLabels(new ArrayObject(['docker-php-test' => 'true']));
 
         $containerCreateResult = $this->getManager()->containerCreate($containerConfig);
         $dockerRawStream = $this->getManager()->containerAttach($containerCreateResult->getId(), [
@@ -66,7 +68,7 @@ class ContainerResourceTest extends TestCase
         $containerConfig->setAttachStdin(false);
         $containerConfig->setOpenStdin(true);
         $containerConfig->setTty(true);
-        $containerConfig->setLabels(new \ArrayObject(['docker-php-test' => 'true']));
+        $containerConfig->setLabels(new ArrayObject(['docker-php-test' => 'true']));
 
         $containerCreateResult = $this->getManager()->containerCreate($containerConfig);
         $webSocketStream = $this->getManager()->containerAttachWebsocket($containerCreateResult->getId(), [
@@ -106,7 +108,7 @@ class ContainerResourceTest extends TestCase
         $containerConfig->setImage('busybox:latest');
         $containerConfig->setCmd(['echo', '-n', 'output']);
         $containerConfig->setAttachStdout(true);
-        $containerConfig->setLabels(new \ArrayObject(['docker-php-test' => 'true']));
+        $containerConfig->setLabels(new ArrayObject(['docker-php-test' => 'true']));
 
         $containerCreateResult = $this->getManager()->containerCreate($containerConfig);
 

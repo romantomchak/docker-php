@@ -6,13 +6,17 @@ namespace Docker\Stream;
 
 use Psr\Http\Message\StreamInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use function in_array;
 
 /**
  * Represent a stream that decode a stream with multiple json in it.
  */
 abstract class MultiJsonStream extends CallbackStream
 {
-    /** @var SerializerInterface Serializer to decode incoming json object */
+
+    /**
+     * @var SerializerInterface Serializer to decode incoming json object
+     */
     private $serializer;
 
     public function __construct(StreamInterface $stream, SerializerInterface $serializer)
@@ -42,15 +46,15 @@ abstract class MultiJsonStream extends CallbackStream
             }
 
             // We ignore white space when it is not part of a quoted string.
-            if (!$inquote && \in_array($jsonChar, [' ', "\r", "\n", "\t"], true)) {
+            if (!$inquote && in_array($jsonChar, [' ', "\r", "\n", "\t"], true)) {
                 continue;
             }
 
-            if (!$inquote && \in_array($jsonChar, ['{', '['], true)) {
+            if (!$inquote && in_array($jsonChar, ['{', '['], true)) {
                 ++$level;
             }
 
-            if (!$inquote && \in_array($jsonChar, ['}', ']'], true)) {
+            if (!$inquote && in_array($jsonChar, ['}', ']'], true)) {
                 --$level;
 
                 if (0 === $level) {

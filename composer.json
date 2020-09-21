@@ -1,5 +1,5 @@
 {
-    "name": "docker-php/docker-php",
+    "name": "romantomchak/docker-php",
     "license": "MIT",
     "type": "library",
     "description": "A Docker PHP client",
@@ -14,24 +14,23 @@
         }
     },
     "require": {
-        "php": ">=7.1",
-        "docker-php/docker-php-api": "4.1.*",
-        "guzzlehttp/psr7": "^1.2",
-        "php-http/client-common": "^1.6",
-        "php-http/socket-client": "^1.3",
-        "php-http/message": "^1.0",
-        "symfony/filesystem": "^2.3 || ^3.0 || ^4.0",
-        "symfony/process": "^2.3 || ^3.0 || ^4.0"
+        "php": ">=7.2",
+        "guzzlehttp/psr7": "^1.6",
+        "php-http/client-common": "^2.3",
+        "php-http/socket-client": "2.0.0-beta1",
+        "php-http/message": "^1.9",
+        "symfony/filesystem": "^4.4 || ^5.0",
+        "symfony/process": "^4.4 || ^5.0",
+        "romantomchak/docker-php-api": "6.1.*"
     },
     "suggest": {
-        "php-http/httplug-bundle": "For integration with Symfony",
-        "amphp/artax": "To use the async api"
+        "php-http/httplug-bundle": "For integration with Symfony"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",
-        "friendsofphp/php-cs-fixer": "2.8.1",
         "amphp/artax": "^3.0",
-        "amphp/socket": "^0.10.5"
+        "amphp/socket": "^0.10.5",
+        "friendsofphp/php-cs-fixer": "^2.16"
     },
     "conflict": {
         "amphp/socket": "<0.10.5",
@@ -45,9 +44,9 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.x-dev"
+            "dev-master": "3.x-dev"
         }
     },
     "prefer-stable": true,
-    "minimum-stability": "dev"
+    "minimum-stability": "beta"
 }

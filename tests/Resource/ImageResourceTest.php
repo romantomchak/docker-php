@@ -11,6 +11,7 @@ use Docker\Tests\TestCase;
 
 class ImageResourceTest extends TestCase
 {
+
     /**
      * Return a container manager.
      */

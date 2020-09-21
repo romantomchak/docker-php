@@ -11,8 +11,9 @@ namespace Docker\Stream;
  */
 class PushStream extends MultiJsonStream
 {
+
     /**
-     * [@inheritdoc}.
+     * {@inheritdoc}.
      */
     protected function getDecodeClass()
     {

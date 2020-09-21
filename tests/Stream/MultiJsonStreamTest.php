@@ -9,9 +9,12 @@ use Docker\Stream\MultiJsonStream;
 use Docker\Tests\TestCase;
 use GuzzleHttp\Psr7\BufferStream;
 use Symfony\Component\Serializer\SerializerInterface;
+use function array_map;
+use function count;
 
 class MultiJsonStreamTest extends TestCase
 {
+
     public function jsonStreamDataProvider()
     {
         return [
@@ -44,9 +47,9 @@ class MultiJsonStreamTest extends TestCase
             ->getMock();
 
         $serializer
-            ->expects($this->exactly(\count($jsonParts)))
+            ->expects($this->exactly(count($jsonParts)))
             ->method('deserialize')
-                ->withConsecutive(...\array_map(function ($part) {
+                ->withConsecutive(...array_map(function ($part) {
                     return [$part, BuildInfo::class, 'json', []];
                 }, $jsonParts))
         ;

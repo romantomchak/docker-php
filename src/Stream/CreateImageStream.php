@@ -11,8 +11,9 @@ namespace Docker\Stream;
  */
 class CreateImageStream extends MultiJsonStream
 {
+
     /**
-     * [@inheritdoc}.
+     * {@inheritdoc}
      */
     protected function getDecodeClass()
     {

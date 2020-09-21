@@ -7,6 +7,11 @@ namespace Docker\Context;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use function fclose;
+use function file_get_contents;
+use function is_resource;
+use function proc_close;
+use function proc_open;
 
 /**
  * Docker\Context\Context.
@@ -45,14 +50,14 @@ class Context implements ContextInterface
     /**
      * @var string Format of the context (stream or tar)
      */
-    private $format = self::FORMAT_STREAM;
+    private $format;
 
     /**
-     * @param string     $directory Directory of context
-     * @param string     $format    Format to use when sending the call (stream or tar: string)
-     * @param Filesystem $fs        filesystem object for cleaning the context directory on destruction
+     * @param string          $directory Directory of context
+     * @param string          $format    Format to use when sending the call (stream or tar: string)
+     * @param Filesystem|null $fs        filesystem object for cleaning the context directory on destruction
      */
-    public function __construct($directory, $format = self::FORMAT_STREAM, Filesystem $fs = null)
+    public function __construct(string $directory, $format = self::FORMAT_STREAM, Filesystem $fs = null)
     {
         $this->directory = $directory;
         $this->format = $format;
@@ -64,7 +69,7 @@ class Context implements ContextInterface
      *
      * @return string
      */
-    public function getDirectory()
+    public function getDirectory(): string
     {
         return $this->directory;
     }
@@ -74,7 +79,7 @@ class Context implements ContextInterface
      *
      * @param string $directory Targeted directory
      */
-    public function setDirectory($directory): void
+    public function setDirectory(string $directory): void
     {
         $this->directory = $directory;
     }
@@ -84,15 +89,15 @@ class Context implements ContextInterface
      *
      * @return string Content of dockerfile
      */
-    public function getDockerfileContent()
+    public function getDockerfileContent(): string
     {
-        return \file_get_contents($this->directory.DIRECTORY_SEPARATOR.'Dockerfile');
+        return file_get_contents($this->directory.DIRECTORY_SEPARATOR.'Dockerfile');
     }
 
     /**
      * @return bool
      */
-    public function isStreamed()
+    public function isStreamed(): bool
     {
         return self::FORMAT_STREAM === $this->format;
     }
@@ -108,13 +113,13 @@ class Context implements ContextInterface
     /**
      * Return the context as a tar archive.
      *
-     * @throws \Symfony\Component\Process\Exception\ProcessFailedException
+     * @throws ProcessFailedException
      *
      * @return string Tar content
      */
-    public function toTar()
+    public function toTar(): string
     {
-        $process = new Process('/usr/bin/env tar c .', $this->directory);
+        $process = new Process(['/usr/bin/env', 'tar', 'c', '.'], $this->directory);
         $process->run();
 
         if (!$process->isSuccessful()) {
@@ -131,8 +136,8 @@ class Context implements ContextInterface
      */
     public function toStream()
     {
-        if (!\is_resource($this->process)) {
-            $this->process = \proc_open('/usr/bin/env tar c .', [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']], $pipes, $this->directory);
+        if (!is_resource($this->process)) {
+            $this->process = proc_open('/usr/bin/env tar c .', [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']], $pipes, $this->directory);
             $this->stream = $pipes[1];
         }
 
@@ -141,12 +146,12 @@ class Context implements ContextInterface
 
     public function __destruct()
     {
-        if (\is_resource($this->stream)) {
-            \fclose($this->stream);
+        if (is_resource($this->stream)) {
+            fclose($this->stream);
         }
 
-        if (\is_resource($this->process)) {
-            \proc_close($this->process);
+        if (is_resource($this->process)) {
+            proc_close($this->process);
         }
 
         if ($this->cleanup) {

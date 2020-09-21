@@ -11,8 +11,9 @@ namespace Docker\Stream;
  */
 class EventStream extends MultiJsonStream
 {
+
     /**
-     * [@inheritdoc}.
+     * {@inheritdoc}.
      */
     protected function getDecodeClass()
     {

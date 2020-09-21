@@ -7,9 +7,20 @@ namespace Docker\Tests\Context;
 use Docker\Context\Context;
 use Docker\Context\ContextBuilder;
 use Docker\Tests\TestCase;
+use function file_put_contents;
+use function fopen;
+use function fwrite;
+use function mkdir;
+use function preg_replace;
+use function rewind;
+use function symlink;
+use function sys_get_temp_dir;
+use function tempnam;
+use function unlink;
 
 class ContextBuilderTest extends TestCase
 {
+
     public function testWritesContextToDisk(): void
     {
         $contextBuilder = new ContextBuilder();
@@ -61,7 +72,7 @@ class ContextBuilderTest extends TestCase
         $contextBuilder->add('/foo', 'random content');
 
         $context = $contextBuilder->getContext();
-        $filename = \preg_replace(<<<DOCKERFILE
+        $filename = preg_replace(<<<DOCKERFILE
 #FROM base
 ADD (.+?) /foo#
 DOCKERFILE
@@ -73,13 +84,13 @@ DOCKERFILE
     public function testWriteTmpFileFromStream(): void
     {
         $contextBuilder = new ContextBuilder();
-        $stream = \fopen('php://temp', 'r+');
-        $this->assertSame(7, \fwrite($stream, 'test123'));
-        \rewind($stream);
+        $stream = fopen('php://temp', 'r+');
+        $this->assertSame(7, fwrite($stream, 'test123'));
+        rewind($stream);
         $contextBuilder->addStream('/foo', $stream);
 
         $context = $contextBuilder->getContext();
-        $filename = \preg_replace(<<<DOCKERFILE
+        $filename = preg_replace(<<<DOCKERFILE
 #FROM base
 ADD (.+?) /foo#
 DOCKERFILE
@@ -90,13 +101,13 @@ DOCKERFILE
     public function testWriteTmpFileFromDisk(): void
     {
         $contextBuilder = new ContextBuilder();
-        $file = \tempnam('', '');
-        \file_put_contents($file, 'abc');
+        $file = tempnam('', '');
+        file_put_contents($file, 'abc');
         $this->assertStringEqualsFile($file, 'abc');
         $contextBuilder->addFile('/foo', $file);
 
         $context = $contextBuilder->getContext();
-        $filename = \preg_replace(<<<DOCKERFILE
+        $filename = preg_replace(<<<DOCKERFILE
 #FROM base
 ADD (.+?) /foo#
 DOCKERFILE
@@ -107,15 +118,15 @@ DOCKERFILE
     public function testWriteTmpDirFromDisk(): void
     {
         $contextBuilder = new ContextBuilder();
-        $dir = \tempnam(\sys_get_temp_dir(), '');
-        \unlink($dir);
-        \mkdir($dir);
-        \file_put_contents($dir.'/test', 'abc');
+        $dir = tempnam(sys_get_temp_dir(), '');
+        unlink($dir);
+        mkdir($dir);
+        file_put_contents($dir.'/test', 'abc');
         $this->assertStringEqualsFile($dir.'/test', 'abc');
         $contextBuilder->addFile('/foo', $dir);
 
         $context = $contextBuilder->getContext();
-        $filename = \preg_replace(<<<DOCKERFILE
+        $filename = preg_replace(<<<DOCKERFILE
 #FROM base
 ADD (.+?) /foo#
 DOCKERFILE
@@ -197,7 +208,7 @@ DOCKERFILE
     public function testWritesExposeCommands(): void
     {
         $contextBuilder = new ContextBuilder();
-        $contextBuilder->expose('80');
+        $contextBuilder->expose(80);
 
         $context = $contextBuilder->getContext();
 
@@ -273,26 +284,26 @@ DOCKERFILE
     public function testTraverseSymlinks(): void
     {
         $contextBuilder = new ContextBuilder();
-        $dir = \tempnam('', '');
-        \unlink($dir);
-        \mkdir($dir);
+        $dir = tempnam('', '');
+        unlink($dir);
+        mkdir($dir);
         $file = $dir.'/test';
 
-        \file_put_contents($file, 'abc');
+        file_put_contents($file, 'abc');
 
         $linkFile = $file.'-symlink';
-        \symlink($file, $linkFile);
+        symlink($file, $linkFile);
 
         $contextBuilder->addFile('/foo', $dir);
 
         $context = $contextBuilder->getContext();
 
-        $filename = \preg_replace(<<<DOCKERFILE
+        $filename = preg_replace(<<<DOCKERFILE
 #FROM base
 ADD (.+?) /foo#
 DOCKERFILE
             , '$1', $context->getDockerfileContent());
-        \unlink($file);
+        unlink($file);
         $context->setCleanup(false);
         $this->assertStringEqualsFile($context->getDirectory().'/'.$filename.'/test-symlink', 'abc');
     }

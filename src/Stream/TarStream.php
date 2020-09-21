@@ -11,6 +11,7 @@ use GuzzleHttp\Psr7\Stream;
  */
 class TarStream extends Stream
 {
+
     /**
      * {@inheritdoc}
      */

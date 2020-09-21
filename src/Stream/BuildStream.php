@@ -11,8 +11,9 @@ namespace Docker\Stream;
  */
 class BuildStream extends MultiJsonStream
 {
+
     /**
-     * [@inheritdoc}.
+     * {@inheritdoc}
      */
     protected function getDecodeClass()
     {

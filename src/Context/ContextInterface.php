@@ -14,7 +14,7 @@ interface ContextInterface
      *
      * @return bool
      */
-    public function isStreamed();
+    public function isStreamed(): bool;
 
     /**
      * If `isStreamed()` is `true`, then `read()` should return a resource.

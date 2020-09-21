@@ -1,7 +1,3 @@
-# No longer maintained
-
-I'm backing off maintaining this library due to a lack of motivation, time and usage of docker, contact me on twitter https://twitter.com/joelwurtz if you wish to take over this repository (or just do a fork).
-
 Docker PHP
 ==========
 
@@ -25,17 +21,17 @@ Installation
 The recommended way to install Docker PHP is of course to use [Composer](http://getcomposer.org/):
 
 ```bash
-composer require docker-php/docker-php
+composer require romantomchak/docker-php
 ```
 
 Docker API Version
 ------------------
 
-By default it will use the last version of docker api available, if you want to fix a version (like 1.25) you can add this 
+By default, it will use the last version of docker api available, if you want to fix a version (like 1.40) you can add this 
 requirement to composer:
 
 ```bash
-composer require "docker-php/docker-php-api:4.1.25.*"
+composer require "romantomchak/docker-php-api:6.1.40.*"
 ```
 
 Usage
@@ -62,11 +58,6 @@ Contributing
 ------------
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-Credits
--------
-
-This README heavily inspired by [willdurand/Negotiation](https://github.com/willdurand/Negotiation) by @willdurand. This guy is pretty awesome.
 
 License
 -------
