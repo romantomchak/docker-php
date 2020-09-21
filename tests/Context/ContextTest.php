@@ -43,11 +43,10 @@ class ContextTest extends TestCase
         $this->assertSame('def', $context->getDirectory());
     }
 
-    /**
-     * @expectedException ProcessFailedException
-     */
     public function testTarFailed(): void
     {
+        $this->expectException(ProcessFailedException::class);
+
         $directory = __DIR__.DIRECTORY_SEPARATOR.'context-test';
         $path = getenv('PATH');
         putenv('PATH=/');
